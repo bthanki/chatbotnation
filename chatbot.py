@@ -35,8 +35,8 @@ def chatbot_facade():
     req = request.get_json(silent=True, force=True)
 
     logger.info("Entry:Chatbot Facade")
-    print("Input Json:")
-    print(json.dumps(req, indent=4, sort_keys=True))
+    #print("Input Json:")
+    #print(json.dumps(req, indent=4, sort_keys=True))
 
     if req.get("result").get("action") == "check_nick_name":
         parameters= req.get("result").get("parameters")
@@ -50,7 +50,10 @@ def chatbot_facade():
                 "text": speech
             }},
             # "contextOut": [],
-            "source": "Test"
+            "source": "Test",
+            "followupEvent": { "name": "first_event"
+
+            }
          }
     elif req.get("result").get("action") == "check_email":
         parameters = req.get("result").get("parameters")
