@@ -40,7 +40,7 @@ def verify_nick_name(name):
     row = rs.fetchall()
     logger.info("Exit:Verify Nick Name")
     if len(row):
-        return make_json({},{},{},{},"day_event")
+        return make_json("",None,"","","day_event")
     else:
         speech="User is not in your friend list"
-        return make_json(speech,speech,speech,{},{})
+        return make_json(speech,speech,speech,"","")
