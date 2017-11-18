@@ -1,4 +1,5 @@
 import json
+import os
 import logging
 from flask import Flask
 from flask import make_response
@@ -56,5 +57,5 @@ def chatbot_facade():
 
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', port=int(os.environ['PORT']))
-    app.run()
+    app.run(host='0.0.0.0', port=int(os.environ['PORT']))
+    #app.run()
