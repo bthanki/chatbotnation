@@ -12,7 +12,6 @@ def make_json(speech,text,data,event):
         "data": {"facebook": {
             "text": data
         }},
-        #"contextOut": context,
         "followupEvent": {"name": event}
     }
     return res
@@ -27,9 +26,11 @@ def verify_email_id(email):
     print(row)
     logger.info("Exit:Verify Email Id")
     if len(row):
-        return "Would you like to add this email id to your Friend List?"
+        speech = "Would you like to add this email id to your Friend List?"
+        return make_json(speech, speech, speech, None)
     else:
-        return "User not found!"
+        speech="User not found!"
+        return make_json(speech,speech,speech,None)
 
 
 def verify_nick_name(name):
@@ -43,4 +44,4 @@ def verify_nick_name(name):
         return make_json(None,None,None,"day_event")
     else:
         speech="User is not in your friend list"
-        return make_json(speech,speech,None,None)
+        return make_json(speech,speech,speech,None)
