@@ -5,14 +5,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def make_json(speech,text,data,context,event):
+def make_json(speech,text,data,event):
     res={
         "speech": speech,
         "displayText": text,
         "data": {"facebook": {
             "text": data
         }},
-        "contextOut": context,
+        #"contextOut": context,
         "followupEvent": {"name": event}
     }
     return res
@@ -40,7 +40,7 @@ def verify_nick_name(name):
     row = rs.fetchall()
     logger.info("Exit:Verify Nick Name")
     if len(row):
-        return make_json("",None,"","","day_event")
+        return make_json(None,None,None,"day_event")
     else:
         speech="User is not in your friend list"
-        return make_json(speech,speech,speech,"","")
+        return make_json(speech,speech,None,None)
