@@ -22,29 +22,23 @@ def chatbot_facade():
 
     logger.info("Entry:Chatbot Facade")
     #print("Input Json:")
-    #print(json.dumps(req, indent=4, sort_keys=True))
+    print(json.dumps(req, indent=4, sort_keys=True))
 
     if req.get("result").get("action") == "check_nick_name":
         parameters= req.get("result").get("parameters")
         name=parameters.get("given-name")
         print(name)
         res=verify_nick_name(name)
-        print (res)
-
     elif req.get("result").get("action") == "check_email":
         parameters = req.get("result").get("parameters")
         email = parameters.get("email")
         print(email)
-        speech = verify_email_id(email)
-        res = {
-            "speech": speech,
-            "displayText": speech,
-            "data": {"facebook": {
-                "text": speech
-            }},
-            # "contextOut": [],
-            "source": "Test"
-        }
+        res = verify_email_id(email)
+    elif req.get("result").get("action") == "save_email":
+        parameters =  req.get("result").get("parameters")
+        email = parameters.get("email")
+        print(email)
+        res = verify_email_id(email)
     else:
         res={}
 

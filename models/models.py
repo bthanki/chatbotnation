@@ -24,7 +24,7 @@ class User(Base):
     join_me = Column(String(255))
     web_ex = Column(String(255))
     video_conf = Column(String(255))
-
+    facebook_id = Column(Integer)
 
 
 class UserChatRsp(Base):

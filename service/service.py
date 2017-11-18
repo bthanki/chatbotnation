@@ -45,3 +45,17 @@ def verify_nick_name(name):
     else:
         speech="User is not in your friend list. Please use his registered email id."
         return make_json(speech,speech,speech,None)
+
+
+def save_friend(email):
+    logger.info("Entry:Save Friend")
+    users = Table('user', get_metadata(), autoload=True)
+    s = users.select(users.c.email_id == email)
+    rs = s.execute()
+    row = rs.fetchall()
+    logger.info("Exit:Save Friend")
+    if len(row):
+        return make_json(None,None,None,"day_event")
+    else:
+        speech="User is not in your friend list. Please use his registered email id."
+        return make_json(speech,speech,speech,None)
