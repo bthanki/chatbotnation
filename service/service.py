@@ -4,19 +4,18 @@ from db.mysql import *
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-response = '''{{
-"speech": {0},
-"displayText": {1},
-"data": {{"facebook": {{
-                "text": {2}
-            }}}},
-"contextOut": {3},
-"followupEvent": {{"name": {4}}}
-}}'''
 
-
-def response_string(speech,text,data,context,event):
-    return response.format(speech,text,data,context,event)
+def make_json(speech,text,data,context,event):
+    res={
+        "speech": speech,
+        "displayText": text,
+        "data": {"facebook": {
+            "text": data
+        }},
+        "contextOut": context,
+        "followupEvent": {"name": event}
+    }
+    return res
 
 
 def verify_email_id(email):
@@ -41,7 +40,7 @@ def verify_nick_name(name):
     row = rs.fetchall()
     logger.info("Exit:Verify Nick Name")
     if len(row):
-        return response_string("{}","{}","{}","{}","\"day_event\"").replace("\n", "")
+        return make_json({},{},{},{},"day_event")
     else:
-        speech="\"User is not in your friend list\""
-        return response_string(speech,speech,speech,{},{}).replace("\n", "")
+        speech="User is not in your friend list"
+        return make_json(speech,speech,speech,{},{})
