@@ -43,5 +43,5 @@ def verify_nick_name(name):
     if len(row):
         return make_json(None,None,None,"day_event")
     else:
-        speech="User is not in your friend list"
+        speech="User is not in your friend list. Please use his registered email id."
         return make_json(speech,speech,speech,None)
