@@ -48,8 +48,7 @@ def chatbot_facade():
     else:
         res={}
 
-
-    res = json.dumps(res, indent=4)
+    res = json.dumps(res, indent=4).replace("\\","")
     print(res)
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
