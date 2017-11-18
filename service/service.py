@@ -4,6 +4,20 @@ from db.mysql import *
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+response = '''{{
+"speech": {0},
+"displayText": {1},
+"data": {{"facebook": {{
+                "text": {2}
+            }}}},
+"contextOut": {3},
+"followupEvent": {{"name": {4}}}
+}}'''
+
+
+def response_string(speech,text,data,context,event):
+    return response.format(speech,text,data,context,event)
+
 
 def verify_email_id(email):
     logger.info("Entry:Verify Email Id:")
@@ -27,10 +41,7 @@ def verify_nick_name(name):
     row = rs.fetchall()
     logger.info("Exit:Verify Nick Name")
     if len(row):
-        res = {
-            "followupEvent": {"name": "day_event"
-                              }
-        }
-        return res
+        return response_string("{}","{}","{}","{}","\"day_event\"").replace("\n", "")
     else:
-        return "User not found!"
+        speech="\"User is not in your friend list\""
+        return response_string(speech,speech,speech,{},{}).replace("\n", "")

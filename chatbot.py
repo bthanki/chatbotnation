@@ -28,6 +28,7 @@ def chatbot_facade():
         name=parameters.get("given-name")
         print(name)
         res=verify_nick_name(name)
+        print (res)
 
     elif req.get("result").get("action") == "check_email":
         parameters = req.get("result").get("parameters")
@@ -46,9 +47,12 @@ def chatbot_facade():
     else:
         res={}
 
-    res = json.dumps(res, indent=4)
+
+   # res = json.dumps(res, indent=4)
+    print(res)
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
+    print(r)
     logger.info("Exit:Chatbot Facade")
     return r
 
