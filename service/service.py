@@ -1,5 +1,5 @@
 import logging
-from chatbotnation.db.mysql import *
+from db.mysql import *
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

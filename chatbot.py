@@ -3,9 +3,9 @@ import logging
 from flask import Flask
 from flask import make_response
 from flask import request
-from chatbotnation.db.mysql import *
-from chatbotnation.service.service import verify_nick_name
-from chatbotnation.service.service import verify_email_id
+from db.mysql import *
+from service.service import verify_nick_name
+from service.service import verify_email_id
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
