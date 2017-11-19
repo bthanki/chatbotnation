@@ -113,6 +113,24 @@ create table user_frnd_list(usr_frnd_list_id mediumint NOT NULL auto_increment,
 
 show fields from user;
 
+show fields from user_chat_rsp;
+
+show fields from user_cln_map;
+
+show fields from user_frnd_list;
+
+show fields from user_gst;
+
+show fields from user_pref;
+
+show fields from user_sch;
+
+show fields from user_team;
+
+show fields from user_team_map;
+
+show fields from user_vip_list;
+
 select * from user;
 
 /* Inserrting into table users*/
