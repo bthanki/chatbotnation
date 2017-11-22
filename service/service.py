@@ -30,7 +30,7 @@ def verify_email_id(email):
         speech = "Would you like to add this email id to your Friend List?"
         return make_json(speech, speech, speech, None)
     else:
-        speech="User not found!"
+        speech="User not found! Please give his registered email id."
         return make_json(speech,speech,speech,None)
 
 
