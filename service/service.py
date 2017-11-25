@@ -24,17 +24,7 @@ def make_json_with_buttons(speech,text,data,event):
     res={
         "speech": speech,
         "displayText": text,
-        "data": {"facebook": {
-            "text": "Butttoonnnssss",
-            "messages": [{
-                "replies": [
-                    "aaaa",
-                    "bbbbb"
-                ],
-                "type":2
-            }]
-
-        }},
+        
         "messages": [
             {
                 "platform": "facebook",
