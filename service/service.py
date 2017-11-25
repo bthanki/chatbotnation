@@ -24,18 +24,12 @@ def make_json_with_buttons(speech,text,data,event):
         "speech": speech,
         "displayText": text,
         "data": {"facebook": {
-            "text": data,
-            "buttons": {
-                "type": "text",
-                 "title": "Slots",
-                  "value": data
-             },
+
             "quick_replies": [{
                  "content_type":"text",
                  "title": "Slots Again",
-                "payload": data[0]
-             }],
-            "replies":data
+                 "payload": data[0]
+             }]
         }},
         "followupEvent": {"name": event}
     }
