@@ -1,7 +1,8 @@
 import logging
+import datetime
 from db.mysql import *
 from datetime import datetime, timedelta, time
-
+from models.models import *
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,12 +27,11 @@ def verify_email_id(email):
     rs = s.execute()
     row= rs.fetchall()
     print(row)
-    logger.info("Exit:Verify Email Id")
     if len(row):
         speech = "Would you like to add this email id to your Friend List?"
         return make_json(speech, speech, speech, None)
     else:
-        speech="User not found!"
+        speech="User not found! Please give his registered email id."
         return make_json(speech,speech,speech,None)
 
 
@@ -41,7 +41,6 @@ def verify_nick_name(name):
     s = user_frnd_list.select(user_frnd_list.c.nick_name == name)
     rs = s.execute()
     row = rs.fetchall()
-    logger.info("Exit:Verify Nick Name")
     if len(row):
         return make_json(None,None,None,"day_event")
     else:
@@ -49,15 +48,22 @@ def verify_nick_name(name):
         return make_json(speech,speech,speech,None)
 
 
-def save_friend(email):
+def save_friend(facebook_id,email,name):
     logger.info("Entry:Save Friend")
-    users = Table('user', get_metadata(), autoload=True)
-    s = users.select(users.c.email_id == email)
-    rs = s.execute()
-    row = rs.fetchall()
-    logger.info("Exit:Save Friend")
-    if len(row):
+    user = get_session().query(User).filter_by(facebook_id=facebook_id).first()
+    friend = get_session().query(User).filter_by(email_id=email).first()
+    if name is None:
+        name=friend.first_name
+    if user.usr_id is not None and friend.usr_id is not None:
+        user_frnd_list = UserFrndList(usr_id=user.usr_id,frnd_usr_id=friend.usr_id,
+                                      created_date=str(datetime.datetime.now()),
+                                      active_flag="A",nick_name=name)
+        get_session().add(user_frnd_list)
+        get_session().commit()
         return make_json(None,None,None,"day_event")
+    if user.usr_id is not None or friend.usr_id is not None:
+        speech = "Either you or your friend is not in the system."
+        return make_json(speech, speech, speech, None)
     else:
         speech="User is not in your friend list. Please use his registered email id."
         return make_json(speech,speech,speech,None)
@@ -126,3 +132,5 @@ def get_schedule_details(email,name,date,period,duration):
             return make_json(speech,speech,slots,None)
         else:
             return make_json(None,None,None,"preferred_day_not_available")
+        speech="There was some problem to add your friend"
+        return make_json(speech,speech,speech,None)

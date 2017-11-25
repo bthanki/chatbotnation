@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, Time, text
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, Time, text, BIGINT
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -24,7 +24,7 @@ class User(Base):
     join_me = Column(String(255))
     web_ex = Column(String(255))
     video_conf = Column(String(255))
-    facebook_id = Column(Integer)
+    facebook_id = Column(BIGINT)
 
 
 class UserChatRsp(Base):

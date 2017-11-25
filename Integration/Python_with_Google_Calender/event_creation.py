@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Created on Sat Nov 18 16:11:36 2017
 
-This is a temporary script file.
+@author: cherp
 """
+
+#!/usr/bin/python
 from __future__ import print_function
 import httplib2
 import os
 
 from apiclient import discovery
+import oauth2client
 from oauth2client import client
 from oauth2client import tools
-from oauth2client.file import Storage
 
 import datetime
 
@@ -26,6 +28,8 @@ except ImportError:
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Google Calendar API Python Quickstart'
+CALENDARID='cherpatisreekanth@gmail.com'
+service=None
 
 def get_credentials():
     """Gets valid user credentials from storage.
@@ -40,10 +44,9 @@ def get_credentials():
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir,
-                                   'calendar-python-quickstart.json')
+    credential_path = os.path.join(credential_dir, 'calendar-python-quickstart.json')
 
-    store = Storage(credential_path)
+    store = oauth2client.file.Storage(credential_path)
     credentials = store.get()
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
@@ -55,7 +58,35 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
+def read_calendar():
+    CAL=service.calendarList().get(calendarId=CALENDARID).execute()
+    print("Calendar Summary & Role:",CAL['summary'],CAL['accessRole'])
+
+
+def insert_event():
+
+    event = {
+      'summary': 'Test Insert Event',
+      'location': 'Home',
+      'description': 'Automagic for the people',
+      'start': {
+        'dateTime': '2016-05-29T09:00:00-07:00',
+        'timeZone': 'America/Los_Angeles',
+      },
+      'end': {
+        'dateTime': '2016-05-29T10:00:00-07:00',
+        'timeZone': 'America/Los_Angeles',
+      },
+      'reminders': {
+        'useDefault': True,
+      },
+    }
+
+    event = service.events().insert(calendarId=CALENDARID, body=event).execute()
+    print('Event created: %s' % (event.get('htmlLink')))
+
 def main():
+    global service
     """Shows basic usage of the Google Calendar API.
 
     Creates a Google Calendar API service object and outputs a list of the next
@@ -68,7 +99,7 @@ def main():
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
     eventsResult = service.events().list(
-        calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
+        calendarId=CALENDARID, timeMin=now, maxResults=10, singleEvents=True,
         orderBy='startTime').execute()
     events = eventsResult.get('items', [])
 
@@ -76,39 +107,14 @@ def main():
         print('No upcoming events found.')
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
+        end = event['end'].get('dateTime', event['end'].get('date'))
 
-event = {
-  'summary': 'Google I/O 2015',
-  'location': '800 Howard St., San Francisco, CA 94103',
-  'description': 'A chance to hear more about Google\'s developer products.',
-  'start': {
-    'dateTime': '2015-05-28T09:00:00-07:00',
-    'timeZone': 'America/Los_Angeles',
-  },
-  'end': {
-    'dateTime': '2015-05-28T17:00:00-07:00',
-    'timeZone': 'America/Los_Angeles',
-  },
-  'recurrence': [
-    'RRULE:FREQ=DAILY;COUNT=2'
-  ],
-  'attendees': [
-    {'email': 'lpage@example.com'},
-    {'email': 'sbrin@example.com'},
-  ],
-  'reminders': {
-    'useDefault': False,
-    'overrides': [
-      {'method': 'email', 'minutes': 24 * 60},
-      {'method': 'popup', 'minutes': 10},
-    ],
-  },
-}
+        print(start,end,'Summary Redacted')
+        print("----------\n")
 
-event = service.events().insert(calendarId='primary', body=event).execute()
-print 'Event created: %s' % (event.get('htmlLink'))
+    read_calendar()
+    insert_event()
+
 
 if __name__ == '__main__':
     main()
-    
