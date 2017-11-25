@@ -65,8 +65,8 @@ def save_friend(facebook_id,email,name):
         speech = "Either you or your friend is not in the system."
         return make_json(speech, speech, speech, None)
     else:
-        speech="User is not in your friend list. Please use his registered email id."
-        return make_json(speech,speech,speech,None)
+        speech = "There was some problem to add your friend"
+        return make_json(speech, speech, speech, None)
 
 
 def get_schedule_details(email,name,date,period,duration):
@@ -132,5 +132,3 @@ def get_schedule_details(email,name,date,period,duration):
             return make_json(speech,speech,slots,None)
         else:
             return make_json(None,None,None,"preferred_day_not_available")
-        speech="There was some problem to add your friend"
-        return make_json(speech,speech,speech,None)
