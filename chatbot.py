@@ -7,6 +7,7 @@ from flask import request
 from db.mysql import *
 from service.service import verify_nick_name
 from service.service import verify_email_id
+from service.service import get_schedule_details
 from service.service import save_friend
 
 logging.basicConfig(level=logging.INFO)
@@ -41,8 +42,17 @@ def chatbot_facade():
         parameters =  req.get("result").get("parameters")
         facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
         email = parameters.get("email")
-        name=parameters.get("given-name2")
-        res = save_friend(facebook_id,email,name)
+        name = parameters.get("given-name2")
+        res = save_friend(facebook_id, email, name)
+    elif req.get("result").get("action") == "check_schedule":
+        parameters = req.get("result").get("parameters")
+        email= parameters.get("email")
+        print(email)
+        name= parameters.get("given-name")
+        date= parameters.get("date")
+        period = parameters.get("period")
+        duration= parameters.get("duration").get("amount")
+        res= get_schedule_details(email,name,date,period,duration)
     else:
         res={}
 
