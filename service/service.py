@@ -19,6 +19,27 @@ def make_json(speech,text,data,event):
     }
     return res
 
+def make_json_with_buttons(speech,text,data,event):
+    res={
+        "speech": speech,
+        "displayText": text,
+        "data": {"facebook": {
+            "text": data,
+            "buttons": {
+                "type": "text",
+                 "title": "Slots",
+                  "value": data
+             },
+            "quick_replies": [{
+                 "content_type":"text",
+                 "title": "Slots Again",
+                "payload": data
+             }],
+            "replies":data
+        }},
+        "followupEvent": {"name": event}
+    }
+    return res
 
 def verify_email_id(email):
     logger.info("Entry:Verify Email Id:")
@@ -129,6 +150,6 @@ def get_schedule_details(email,name,date,period,duration):
             else:
                 slots=[]
                 speech="Please Choose different time period"
-            return make_json(speech,speech,slots,None)
+            return make_json_with_buttons(speech,speech,slots,None)
         else:
-            return make_json(None,None,None,"preferred_day_not_available")
+            return make_json_with_buttons(None,None,None,"preferred_day_not_available")
