@@ -26,14 +26,26 @@ def make_json_with_buttons(speech,text,data,event):
         "displayText": text,
         "data": {"facebook": {
             "text": "Butttoonnnssss",
-            "message": {
-                "quick_reply": {
-                 "content_type":"text",
-                 "title": "Slots Again",
-                 "payload": data[0]
-                }
-            }
+            "messages": [{
+                "replies": [
+                    data[0],
+                    data[1]
+                ]
+            }]
+
         }},
+        "messages": [
+            {
+                "platform": "facebook",
+                "replies": [
+                    "Quick reply 1",
+                    "Quick reply 2",
+                    "Quick reply 3"
+                ],
+                "title": "Quick Reply Title",
+                "type": 2
+            }
+        ],
         "followupEvent": {"name": event}
     }
     return res
