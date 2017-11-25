@@ -7,6 +7,7 @@ from flask import request
 from db.mysql import *
 from service.service import verify_nick_name
 from service.service import verify_email_id
+from service.service import get_schedule_details
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,6 +40,16 @@ def chatbot_facade():
         email = parameters.get("email")
         print(email)
         res = verify_email_id(email)
+    elif req.get("result").get("action") == "check_schedule":
+        parameters = req.get("result").get("parameters")
+        email= parameters.get("email")
+        print(email)
+        name= parameters.get("given-name")
+        date= parameters.get("date")
+        period = parameters.get("period")
+        duration= parameters.get("duration").get("amount")
+        res= get_schedule_details(email,name,date,period,duration)
+
     else:
         res={}
 
