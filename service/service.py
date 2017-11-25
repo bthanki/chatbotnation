@@ -28,9 +28,10 @@ def make_json_with_buttons(speech,text,data,event):
             "text": "Butttoonnnssss",
             "messages": [{
                 "replies": [
-                    data[0],
-                    data[1]
-                ]
+                    "aaaa",
+                    "bbbbb"
+                ],
+                "type":2
             }]
 
         }},
@@ -49,6 +50,7 @@ def make_json_with_buttons(speech,text,data,event):
         "followupEvent": {"name": event}
     }
     return res
+
 
 def verify_email_id(email):
     logger.info("Entry:Verify Email Id:")
