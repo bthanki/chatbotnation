@@ -33,7 +33,7 @@ def make_json_with_buttons(speech,text,data,event):
             "quick_replies": [{
                  "content_type":"text",
                  "title": "Slots Again",
-                "payload": data
+                "payload": data[0]
              }],
             "replies":data
         }},
