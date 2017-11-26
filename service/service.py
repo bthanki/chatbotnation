@@ -21,24 +21,23 @@ def make_json(speech,text,data,event):
 
 
 def make_json_with_buttons(speech,text,data,event):
+    print(data)
     res={
         "speech": speech,
         "displayText": text,
-        
         "messages": [
             {
                 "platform": "facebook",
-                "replies": [
-                    "Quick reply 1",
-                    "Quick reply 2",
-                    "Quick reply 3"
-                ],
-                "title": "Quick Reply Title",
+                "replies": data,
+                "title": "Slots Available:",
                 "type": 2
             }
         ],
         "followupEvent": {"name": event}
     }
+
+    print(res)
+
     return res
 
 
