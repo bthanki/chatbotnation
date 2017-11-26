@@ -67,18 +67,29 @@ def read_calendar():
     print("Calendar Summary & Role:",CAL['summary'],CAL['accessRole'])
 """
 
-def free_busy():
- 
+def free_busy(start,end):
+    """
+    calender='1/wTnZtJ6NTvtLGbdRICMcE4j3DdNR5HMapVj32TZaTT4'
+    """
     freebusy_query = service.freebusy().query(body=
         {"timeMin": start,
           "timeMax": end,
           "timeZone": 'Europe/Madrid',
-          "items": 'cherpatisreekanth@gmail.com'
+          "items": [
+            {
+              "id":CALENDARID
+            }
+              ]
         }).execute()
+    
+    
 
-    calender='1/wTnZtJ6NTvtLGbdRICMcE4j3DdNR5HMapVj32TZaTT4'
-    availability = calender.freebusy().query(body=freebusy_query).execute()
-    return availability
+    cal_dict = freebusy_query[u'calendars']
+            
+    for cal_name in cal_dict:
+        print(cal_name, cal_dict[cal_name])
+       
+   
 """  
 def insert_event():
 
@@ -144,7 +155,7 @@ def main():
     
     insert_event()
     """
-    free_busy()
+    free_busy(start,end)
 
 
 if __name__ == '__main__':
