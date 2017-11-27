@@ -5,7 +5,6 @@ Created on Sat Nov 18 16:11:36 2017
 @author: cherp
 """
 
-#!/usr/bin/python
 from __future__ import print_function
 import httplib2
 import os
@@ -33,10 +32,8 @@ service=None
 
 def get_credentials():
     """Gets valid user credentials from storage.
-
     If nothing has been stored, or if the stored credentials are invalid,
     the OAuth2 flow is completed to obtain the new credentials.
-
     Returns:
         Credentials, the obtained credential.
     """
@@ -70,13 +67,16 @@ def insert_event():
       'location': 'Home',
       'description': 'Automagic for the people',
       'start': {
-        'dateTime': '2016-05-29T09:00:00-07:00',
+        'dateTime': '2017-12-29T14:00:00-07:00',
         'timeZone': 'America/Los_Angeles',
       },
       'end': {
-        'dateTime': '2016-05-29T10:00:00-07:00',
+        'dateTime': '2017-12-29T15:00:00-07:00',
         'timeZone': 'America/Los_Angeles',
       },
+      'attendees':[
+            {'email':'chatbotnation1@mail.usf.edu'}
+            ],
       'reminders': {
         'useDefault': True,
       },
@@ -88,7 +88,6 @@ def insert_event():
 def main():
     global service
     """Shows basic usage of the Google Calendar API.
-
     Creates a Google Calendar API service object and outputs a list of the next
     10 events on the user's calendar.
     """
