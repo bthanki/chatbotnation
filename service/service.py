@@ -155,3 +155,49 @@ def get_schedule_details(email,name,date,period,duration):
                 return make_json_with_buttons(speech,speech,speech,"preferred_time_period_not_available")
         else:
             return make_json_with_buttons(None,None,None,"preferred_day_not_available")
+
+
+def insert_into_schtable(date,facebook_id,duration_amount,team_name,application,start_time):
+    new_date = datetime.datetime.strptime(date , '%Y-%m-%d')
+    new_facebook_id = int(facebook_id.replace(" ",""))
+    logger.info("Entry:Insert params:")
+    user_new = Table('user',metadata,autoload = True)
+    s = user_new.select(user_new.c.facebook_id == new_facebook_id)
+    rs = s.execute()
+    rsx = rs.fetchall()
+
+    if len(rsx) :
+        con = engine.connect()
+        u = select([user_new.c.usr_id]).where(user_new.c.facebook_id == new_facebook_id)
+        rw = con.execute(u)
+        row = rw.fetchall()
+        user_schedule = Table('user_sch',metadata, autoload=True)
+        user_team_new = Table('user_team', metadata, autoload=True)
+        con = engine.connect()
+        rs = con.execute(user_schedule.insert().values(sch_date=new_date, usr_id=row[0][0], sch_duration=duration_amount, application = application,sch_start_time = start_time))
+        wk = con.execute(user_team_new.insert().values(leader_id = row[0][0],team_name = team_name ))
+        logger.info("Exit:Insert params")
+        if rs :
+             return "Awesome you meeting has been scheduled!"
+        else:
+             return "Not Inserted!"
+    else :
+        return "No entry found in User Table"
+
+
+
+def user_greetings(new_facebook_id):
+    con = engine.connect()
+    facebook_id = int(new_facebook_id.replace(" ", ""))
+    logger.info("Entry:Greet User:")
+    user_new = Table('user',metadata,autoload = True)
+    u = select([user_new.c.first_name]).where(user_new.c.facebook_id == facebook_id)
+    rw = con.execute(u)
+    print(rw)
+    row = rw.fetchall()
+    value = row[0][0]
+    print(value)
+    if len(row) :
+        return 'Hi'+ value
+    else:
+        return "No User"
