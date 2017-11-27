@@ -18,7 +18,7 @@ from oauth2client import tools
 
 
 import datetime
-from datetime import datetime
+import pytz
 
 try:
     import argparse
@@ -29,9 +29,9 @@ except ImportError:
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/calendar-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/calendar'
-CLIENT_SECRET_FILE = 'client_secret_new.json'
+CLIENT_SECRET_FILE = 'client_secret_1.json'
 APPLICATION_NAME = 'Google Calendar API Python Quickstart'
-CALENDARID='cherpatisreekanth@gmail.com'
+CALENDARID='chatbotnation1@gmail.com'
 service=None
 
 def get_credentials():
@@ -71,18 +71,23 @@ def free_busy(start,end):
     """
     calender='1/wTnZtJ6NTvtLGbdRICMcE4j3DdNR5HMapVj32TZaTT4'
     """
+    tz = pytz.timezone('US/Central')
+    start = tz.localize(datetime.datetime(2017, 11, 27, 0)).isoformat()
+    end = tz.localize(datetime.datetime(2017, 12, 27, 23)).isoformat()
+    
     freebusy_query = service.freebusy().query(body=
         {"timeMin": start,
           "timeMax": end,
           "timeZone": 'Europe/Madrid',
           "items": [
             {
-              "id":CALENDARID
+              "id":'chatbotnation1@gmail.com'
+            },
+            {
+              "id":'chatbotnation2@gmail.com'
             }
               ]
-        }).execute()
-    
-    
+        }).execute() 
 
     cal_dict = freebusy_query[u'calendars']
             
@@ -126,8 +131,7 @@ def main():
     10 events on the user's calendar.
     
     """
-    start = datetime.now().replace(microsecond=0).isoformat() + "-04:00"
-    end = datetime.now().replace(hour=23, microsecond=0).isoformat() + "-04:00"
+    
     
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
