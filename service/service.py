@@ -133,23 +133,25 @@ def get_schedule_details(email,name,date,period,duration):
             if period=="Morning" and start >= m1 and end <= m2 :
                 #nslots= (end - start)/ duration_time
                 while start + duration_time <= end:
-                    slot = str(start.strftime('%H:%M:%S')) + "-" + str((start + duration_time).strftime('%H:%M:%S'))
+                    slot = str(start.strftime('%H:%M')) + "-" + str((start + duration_time).strftime('%H:%M'))
                     slots.append(slot)
                     start+= duration_time
                 speech="Please Choose from the available slots"
+                return make_json_with_buttons(speech, speech, slots, None)
 
             elif period=="Afternoon" and start > a1 and end <= a2 :
                 #nslots = (end - start) / duration_time
                 while start + duration_time <= end:
-                    slot = str(start.strftime('%H:%M:%S')) + "-" + str((start + duration_time).strftime('%H:%M:%S'))
+                    slot = str(start.strftime('%H:%M')) + "-" + str((start + duration_time).strftime('%H:%M'))
                     print(slot)
                     slots.append(slot)
                     start += duration_time
                 speech = "Please Choose from the available slots"
+                return make_json_with_buttons(speech, speech, slots, None)
 
             else:
-                slots=[]
+                #slots=[]
                 speech="Please Choose different time period"
-            return make_json_with_buttons(speech,speech,slots,None)
+                return make_json_with_buttons(speech,speech,speech,"preferred_time_period_not_available")
         else:
             return make_json_with_buttons(None,None,None,"preferred_day_not_available")
