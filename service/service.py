@@ -125,13 +125,13 @@ def get_schedule_details(email,name,date,period,duration):
     print(id)
     if id is not None:
         date=datetime.strptime(date,'%Y-%m-%d')
-        #print(date)
+        print(date)
         day = date.strftime('%a')#.weekday()
-        #print(day)
+        print(day)
         s = user_prefs.select((user_prefs.c.usr_id == id) & (user_prefs.c.pref_day == day))
         rs=s.execute()
         rows= rs.fetchone()
-        #print(rows)
+        print(rows)
         if rows is not None and len(rows):
             slots = []
             duration_time=timedelta(minutes=duration)
@@ -167,8 +167,10 @@ def get_schedule_details(email,name,date,period,duration):
             else:
                 #slots=[]
                 speech="Please Choose different time period"
+                print("No morning and afternoon")
                 return make_json_with_buttons(speech,speech,speech,"preferred_time_period_not_available")
         else:
+            print("no id")
             return make_json_with_buttons(None,None,None,"preferred_day_not_available")
 
 
