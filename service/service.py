@@ -174,11 +174,23 @@ def get_schedule_details(email,name,date,period,duration):
 
 
 def insert_into_schtable(date,facebook_id,duration_amount,application,start_time,email,name):
+
+
+
     new_date = datetime.strptime(date , '%Y-%m-%d')
-    new_facebook_id = int(facebook_id.replace(" ",""))
+    print(new_date)
     logger.info("Entry:Insert params:")
-    user = get_session().query(User).filter_by(facebook_id=new_facebook_id).first()
     user_frnd_list = get_session().query(UserFrndList)
+    event_name = "ChatbotNation"
+    description = "Google api call"
+    time_zone = 'America/New_York'
+    start_date = str(date)+'T'+start_time
+
+    end_date = str(date)+'T'+start_time
+    print(end_date)
+    new_facebook_id = int(facebook_id.replace(" ", ""))
+    user = get_session().query(User).filter_by(facebook_id=new_facebook_id).first()
+    email_from = user.email_id
 
     if user.usr_id is not None :
         user_cln_map = get_session().query(UserClnMap).filter_by(usr_id=user.usr_id).first()
@@ -188,14 +200,28 @@ def insert_into_schtable(date,facebook_id,duration_amount,application,start_time
             row = rs1.fetchone()
             id = row['usr_id']
         elif name is not '':
+            user_frnd_list = Table('user_frnd_list',get_metadata(),autoload=True)
             s1 = user_frnd_list.select(user_frnd_list.c.nick_name == name)
             rs1 = s1.execute()
             row = rs1.fetchone()
             id = row['frnd_usr_id']
         user_sch=UserSch(usr_id = user.usr_id, sch_date = new_date , sch_start_time = start_time, sch_duration = duration_amount,
-                         application = application, active_flag = 1 , usr_cln_id = user_cln_map.usr_cln_id , usr_prin_part_id = id, created_date = str(datetime.datetime.now()) )
+                         application = application, active_flag = 1 , usr_cln_id = user_cln_map.usr_cln_id , usr_prin_part_id = id, created_date = str(datetime.now()) )
         get_session().add(user_sch)
         get_session().commit()
+
+        if email is not '':
+            email_to = email
+        else:
+            s1 = user_frnd_list.select(user_frnd_list.c.nick_name == name)
+            rs1 = s1.execute()
+            row = rs1.fetchone()
+            id = row['frnd_usr_id']
+            user2=get_session().query(User).filter_by(usr_id=id).first()
+            email_to = user2.email_id
+        insert_event(event_name, description, start_date, end_date, time_zone, email_from, email_to)
+
+
         logger.info("Exit:Insert params")
     else:
         return "No entry found in User Table"
@@ -203,6 +229,7 @@ def insert_into_schtable(date,facebook_id,duration_amount,application,start_time
 
 
 def insert_event(event_name,description,start_date,end_date,time_zone,email_from,email_to):
+
     logger.info("Entry:insert event in google calendar")
     credentials = get_credentials(email_from)
     http = credentials.authorize(httplib2.Http())
