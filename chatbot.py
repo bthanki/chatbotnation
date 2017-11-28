@@ -53,7 +53,7 @@ def chatbot_facade():
         print(email)
         name= parameters.get("given-name")
         date= parameters.get("date")
-        period = parameters.get("period")
+        period = parameters.get("Period")
         duration= parameters.get("duration").get("amount")
         res= get_schedule_details(email,name,date,period,duration)
     elif req.get("result").get("action") == "final_step":
@@ -105,5 +105,5 @@ def chatbot_facade():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ['PORT']))
-    #app.run()
+    #app.run(host='0.0.0.0', port=int(os.environ['PORT']))
+    app.run()
