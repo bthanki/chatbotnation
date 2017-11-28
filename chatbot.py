@@ -59,14 +59,15 @@ def chatbot_facade():
         facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
         print(facebook_id)
         parameters = req.get("result").get("parameters")
+        name = parameters.get("given-name")
+        email = parameters.get("email")
         date = parameters.get("date")
         duration = parameters.get("duration")
         duration_amount = duration.get("amount")
-        team_name = parameters.get("team-name")
         application = parameters.get("application")
         start_time = parameters.get("time1")
         print(start_time)
-        speech = insert_into_schtable(date,facebook_id,duration_amount,team_name,application,start_time)
+        speech = insert_into_schtable(date,facebook_id,duration_amount,application,start_time,email,name)
         res = {
             "speech": speech,
             "displayText": speech,
@@ -102,5 +103,5 @@ def chatbot_facade():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ['PORT']))
-    #app.run()
+    #app.run(host='0.0.0.0', port=int(os.environ['PORT']))
+    app.run()

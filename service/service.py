@@ -157,42 +157,41 @@ def get_schedule_details(email,name,date,period,duration):
             return make_json_with_buttons(None,None,None,"preferred_day_not_available")
 
 
-def insert_into_schtable(date,facebook_id,duration_amount,team_name,application,start_time):
-    new_date = datetime.datetime.strptime(date , '%Y-%m-%d')
+def insert_into_schtable(date,facebook_id,duration_amount,application,start_time,email,name):
+    new_date = datetime.strptime(date , '%Y-%m-%d')
     new_facebook_id = int(facebook_id.replace(" ",""))
     logger.info("Entry:Insert params:")
-    user_new = Table('user',metadata,autoload = True)
-    s = user_new.select(user_new.c.facebook_id == new_facebook_id)
-    rs = s.execute()
-    rsx = rs.fetchall()
+    user = get_session().query(User).filter_by(facebook_id=new_facebook_id).first()
+    user_frnd_list = get_session().query(UserFrndList)
 
-    if len(rsx) :
-        con = engine.connect()
-        u = select([user_new.c.usr_id]).where(user_new.c.facebook_id == new_facebook_id)
-        rw = con.execute(u)
-        row = rw.fetchall()
-        user_schedule = Table('user_sch',metadata, autoload=True)
-        user_team_new = Table('user_team', metadata, autoload=True)
-        con = engine.connect()
-        rs = con.execute(user_schedule.insert().values(sch_date=new_date, usr_id=row[0][0], sch_duration=duration_amount, application = application,sch_start_time = start_time))
-        wk = con.execute(user_team_new.insert().values(leader_id = row[0][0],team_name = team_name ))
+    if user.usr_id is not None :
+        user_cln_map = get_session().query(UserClnMap).filter_by(usr_id=user.usr_id).first()
+        if email is not '':
+            s1 = user.select(user.c.email_id == email)
+            rs1 = s1.execute()
+            row = rs1.fetchone()
+            id = row['usr_id']
+        elif name is not '':
+            s1 = user_frnd_list.select(user_frnd_list.c.nick_name == name)
+            rs1 = s1.execute()
+            row = rs1.fetchone()
+            id = row['frnd_usr_id']
+        user_sch=UserSch(usr_id = user.usr_id, sch_date = new_date , sch_start_time = start_time, sch_duration = duration_amount,
+                         application = application, active_flag = 1 , usr_cln_id = user_cln_map.usr_cln_id , usr_prin_part_id = id, created_date = str(datetime.datetime.now()) )
+        get_session().add(user_sch)
+        get_session().commit()
         logger.info("Exit:Insert params")
-        if rs :
-             return "Awesome you meeting has been scheduled!"
-        else:
-             return "Not Inserted!"
     else :
         return "No entry found in User Table"
 
 
-
 def user_greetings(new_facebook_id):
-    con = engine.connect()
+    #con = engine.connect()
     facebook_id = int(new_facebook_id.replace(" ", ""))
     logger.info("Entry:Greet User:")
-    user_new = Table('user',metadata,autoload = True)
+    user_new = Table('user',get_metadata(),autoload = True)
     u = select([user_new.c.first_name]).where(user_new.c.facebook_id == facebook_id)
-    rw = con.execute(u)
+    rw = u.execute()
     print(rw)
     row = rw.fetchall()
     value = row[0][0]
