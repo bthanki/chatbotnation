@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Google Calendar API Python Quickstart'
-CALENDARID='cherpatisreekanth@gmail.com'
 
 try:
     import argparse
@@ -175,41 +174,53 @@ def get_schedule_details(email,name,date,period,duration):
 
 
 
-def insert_event():
-
-    credentials = get_credentials()
+def insert_event(event_name,description,start_date,end_date,time_zone,email_from,email_to):
+    logger.info("Entry:insert event in google calendar")
+    credentials = get_credentials(email_from)
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
-    event = {
-      'summary': 'Test Insert Event',
-      'location': 'Home',
-      'description': 'Automagic for the people',
-      'start': {
-        'dateTime': '2017-12-30T14:00:00-07:00',
-        'timeZone': 'America/Los_Angeles',
-      },
-      'end': {
-        'dateTime': '2017-12-30T15:00:00-07:00',
-        'timeZone': 'America/Los_Angeles',
-      },
-      'attendees':[
-            {'email':'chatbotnation1@gmail.com'}
-            ],
-      'reminders': {
-        'useDefault': True,
-      },
-    }
-
-    event = service.events().insert(calendarId=CALENDARID, body=event).execute()
+    event=event_json_creation(event_name,description,start_date,end_date,time_zone,email_from,email_to)
+    event = service.events().insert(calendarId=email_from, body=event).execute()
     print('Event created: %s' % (event.get('htmlLink')))
 
+def event_json_creation(event_name,description,start_date,end_date,time_zone,email_from,email_to):
+    logger.info("Entry:event json creation for google calendar")
+    event = {
+        'summary': event_name,
+        'location': 'Office',
+        'description': description,
+        'start': {
+            'dateTime': start_date,
+            'timeZone': time_zone,
+        },
+        'end': {
+            'dateTime': end_date,
+            'timeZone': time_zone,
+        },
+        'attendees': [
+            {'email': email_to}
+        ],
+        'reminders': {
+            'useDefault': True,
+        },
+    }
+    return event
 
-def get_credentials():
+def get_credentials(email):
+    logger.info("Entry:get credentials for google calendar")
     home_dir = os.path.dirname(__file__)
     credential_dir = os.path.join(home_dir, 'credentials')
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir, 'calendar-python-quickstart.json')
+    if(email=='chatbotnation1@gmail.com'):
+        json='chatbotnation1.json'
+    elif (email=='chatbotnation2@gmail.com'):
+        json = 'chatbotnation2.json'
+    elif (email=='chatbotnation3@gmail.com'):
+        json = 'chatbotnation3.json'
+    elif (email=='chatbotnation4@gmail.com'):
+        json = 'chatbotnation4.json'
+    credential_path = os.path.join(credential_dir, json)
 
     store = oauth2client.file.Storage(credential_path)
     credentials = store.get()
@@ -225,6 +236,7 @@ def get_credentials():
 
 
 def insert_into_schtable(date,facebook_id,duration_amount,team_name,application,start_time):
+    logger.info("Entry:insert schedule in local")
     new_date = datetime.datetime.strptime(date , '%Y-%m-%d')
     new_facebook_id = int(facebook_id.replace(" ",""))
     logger.info("Entry:Insert params:")
