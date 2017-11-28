@@ -101,9 +101,7 @@ def chatbot_facade():
     logger.info("Exit:Chatbot Facade")
     return r
 
-@app.route('/', methods=['GET'])
-def hello_world():
-    res = insert_event()
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ['PORT']))

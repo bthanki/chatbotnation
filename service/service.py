@@ -255,6 +255,7 @@ def insert_into_schtable(date,facebook_id,duration_amount,team_name,application,
         con = engine.connect()
         rs = con.execute(user_schedule.insert().values(sch_date=new_date, usr_id=row[0][0], sch_duration=duration_amount, application = application,sch_start_time = start_time))
         wk = con.execute(user_team_new.insert().values(leader_id = row[0][0],team_name = team_name ))
+        #insert_event(event_name,description,start_date,end_date,time_zone,email_from,email_to)
         logger.info("Exit:Insert params")
         if rs :
              return "Awesome you meeting has been scheduled!"
