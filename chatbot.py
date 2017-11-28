@@ -10,6 +10,8 @@ from service.service import verify_email_id
 from service.service import get_schedule_details
 from service.service import save_friend
 from service.service import insert_event
+from service.service import insert_into_schtable
+from service.service import user_greetings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,6 +56,40 @@ def chatbot_facade():
         period = parameters.get("period")
         duration= parameters.get("duration").get("amount")
         res= get_schedule_details(email,name,date,period,duration)
+    elif req.get("result").get("action") == "final_step":
+        facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
+        print(facebook_id)
+        parameters = req.get("result").get("parameters")
+        date = parameters.get("date")
+        duration = parameters.get("duration")
+        duration_amount = duration.get("amount")
+        team_name = parameters.get("team-name")
+        application = parameters.get("application")
+        start_time = parameters.get("time1")
+        print(start_time)
+        speech = insert_into_schtable(date,facebook_id,duration_amount,team_name,application,start_time)
+        res = {
+            "speech": speech,
+            "displayText": speech,
+            "data": {"facebook": {
+                "text": speech
+            }},
+            # "contextOut": [],
+            "source": "Test"
+        }
+    elif req.get("result").get("action") == "user_greet":
+        new_facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
+        print(new_facebook_id)
+        speech = user_greetings(new_facebook_id)
+        res = {
+            "speech": speech,
+            "displayText": speech,
+            "data": {"facebook": {
+                "text": speech
+            }},
+            # "contextOut": [],
+            "source": "Test"
+        }
     else:
         res = {}
 

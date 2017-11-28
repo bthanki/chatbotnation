@@ -149,37 +149,31 @@ def get_schedule_details(email,name,date,period,duration):
             if period=="Morning" and start >= m1 and end <= m2 :
                 #nslots= (end - start)/ duration_time
                 while start + duration_time <= end:
-                    slot = str(start.strftime('%H:%M:%S')) + "-" + str((start + duration_time).strftime('%H:%M:%S'))
+                    slot = str(start.strftime('%H:%M')) + "-" + str((start + duration_time).strftime('%H:%M'))
                     slots.append(slot)
                     start+= duration_time
                 speech="Please Choose from the available slots"
+                return make_json_with_buttons(speech, speech, slots, None)
 
             elif period=="Afternoon" and start > a1 and end <= a2 :
                 #nslots = (end - start) / duration_time
                 while start + duration_time <= end:
-                    slot = str(start.strftime('%H:%M:%S')) + "-" + str((start + duration_time).strftime('%H:%M:%S'))
+                    slot = str(start.strftime('%H:%M')) + "-" + str((start + duration_time).strftime('%H:%M'))
                     print(slot)
                     slots.append(slot)
                     start += duration_time
                 speech = "Please Choose from the available slots"
+                return make_json_with_buttons(speech, speech, slots, None)
 
             else:
-                slots=[]
+                #slots=[]
                 speech="Please Choose different time period"
-            return make_json_with_buttons(speech,speech,slots,None)
+                return make_json_with_buttons(speech,speech,speech,"preferred_time_period_not_available")
         else:
             return make_json_with_buttons(None,None,None,"preferred_day_not_available")
 
 
-def get_calendar_json(email):
-    logger.info("Entry:get calendar json")
-    if email is not None:
-        user_cln_map = Table('user_cln_map', get_metadata(), autoload=True)
-        s1 = user_cln_map.select(user_cln_map.c.cln_email_id == email)
-        rs1 = s1.execute()
-        row = rs1.fetchone()
-        id = row['calendar_json']
-        return id
+
 
 def insert_event():
 
@@ -209,6 +203,7 @@ def insert_event():
     event = service.events().insert(calendarId=CALENDARID, body=event).execute()
     print('Event created: %s' % (event.get('htmlLink')))
 
+
 def get_credentials():
     home_dir = os.path.dirname(__file__)
     credential_dir = os.path.join(home_dir, 'credentials')
@@ -228,4 +223,49 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
+
+def insert_into_schtable(date,facebook_id,duration_amount,team_name,application,start_time):
+    new_date = datetime.datetime.strptime(date , '%Y-%m-%d')
+    new_facebook_id = int(facebook_id.replace(" ",""))
+    logger.info("Entry:Insert params:")
+    user_new = Table('user',metadata,autoload = True)
+    s = user_new.select(user_new.c.facebook_id == new_facebook_id)
+    rs = s.execute()
+    rsx = rs.fetchall()
+
+    if len(rsx) :
+        con = engine.connect()
+        u = select([user_new.c.usr_id]).where(user_new.c.facebook_id == new_facebook_id)
+        rw = con.execute(u)
+        row = rw.fetchall()
+        user_schedule = Table('user_sch',metadata, autoload=True)
+        user_team_new = Table('user_team', metadata, autoload=True)
+        con = engine.connect()
+        rs = con.execute(user_schedule.insert().values(sch_date=new_date, usr_id=row[0][0], sch_duration=duration_amount, application = application,sch_start_time = start_time))
+        wk = con.execute(user_team_new.insert().values(leader_id = row[0][0],team_name = team_name ))
+        logger.info("Exit:Insert params")
+        if rs :
+             return "Awesome you meeting has been scheduled!"
+        else:
+             return "Not Inserted!"
+    else :
+        return "No entry found in User Table"
+
+
+
+def user_greetings(new_facebook_id):
+    con = engine.connect()
+    facebook_id = int(new_facebook_id.replace(" ", ""))
+    logger.info("Entry:Greet User:")
+    user_new = Table('user',metadata,autoload = True)
+    u = select([user_new.c.first_name]).where(user_new.c.facebook_id == facebook_id)
+    rw = con.execute(u)
+    print(rw)
+    row = rw.fetchall()
+    value = row[0][0]
+    print(value)
+    if len(row) :
+        return 'Hi'+ value
+    else:
+        return "No User"
 
