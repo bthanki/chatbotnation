@@ -9,6 +9,7 @@ from service.service import verify_nick_name
 from service.service import verify_email_id
 from service.service import get_schedule_details
 from service.service import save_friend
+from service.service import insert_event
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ def chatbot_facade():
         duration= parameters.get("duration").get("amount")
         res= get_schedule_details(email,name,date,period,duration)
     else:
-        res={}
+        res = {}
 
     res = json.dumps(res, indent=4)
     #print(res)
@@ -64,7 +65,10 @@ def chatbot_facade():
     logger.info("Exit:Chatbot Facade")
     return r
 
+@app.route('/', methods=['GET'])
+def hello_world():
+    res = insert_event()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ['PORT']))
-    #app.run()
+    #app.run(host='0.0.0.0', port=int(os.environ['PORT']))
+    app.run()

@@ -3,10 +3,26 @@ import datetime
 from db.mysql import *
 from datetime import datetime, timedelta, time
 from models.models import *
+import os
+from apiclient import discovery
+import httplib2
+import oauth2client
+from oauth2client import client
+from oauth2client import tools
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+SCOPES = 'https://www.googleapis.com/auth/calendar'
+CLIENT_SECRET_FILE = 'client_secret.json'
+APPLICATION_NAME = 'Google Calendar API Python Quickstart'
+CALENDARID='cherpatisreekanth@gmail.com'
+
+try:
+    import argparse
+    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+except ImportError:
+    flags = None
 
 def make_json(speech,text,data,event):
     res={
@@ -153,3 +169,63 @@ def get_schedule_details(email,name,date,period,duration):
             return make_json_with_buttons(speech,speech,slots,None)
         else:
             return make_json_with_buttons(None,None,None,"preferred_day_not_available")
+
+
+def get_calendar_json(email):
+    logger.info("Entry:get calendar json")
+    if email is not None:
+        user_cln_map = Table('user_cln_map', get_metadata(), autoload=True)
+        s1 = user_cln_map.select(user_cln_map.c.cln_email_id == email)
+        rs1 = s1.execute()
+        row = rs1.fetchone()
+        id = row['calendar_json']
+        return id
+
+def insert_event():
+
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar', 'v3', http=http)
+    event = {
+      'summary': 'Test Insert Event',
+      'location': 'Home',
+      'description': 'Automagic for the people',
+      'start': {
+        'dateTime': '2017-12-30T14:00:00-07:00',
+        'timeZone': 'America/Los_Angeles',
+      },
+      'end': {
+        'dateTime': '2017-12-30T15:00:00-07:00',
+        'timeZone': 'America/Los_Angeles',
+      },
+      'attendees':[
+            {'email':'chatbotnation1@gmail.com'}
+            ],
+      'reminders': {
+        'useDefault': True,
+      },
+    }
+
+    event = service.events().insert(calendarId=CALENDARID, body=event).execute()
+    print('Event created: %s' % (event.get('htmlLink')))
+
+def get_credentials():
+    home_dir = os.path.dirname(__file__)
+    credential_dir = os.path.join(home_dir, 'credentials')
+    if not os.path.exists(credential_dir):
+        os.makedirs(credential_dir)
+    credential_path = os.path.join(credential_dir, 'calendar-python-quickstart.json')
+
+    store = oauth2client.file.Storage(credential_path)
+    credentials = store.get()
+    if not credentials or credentials.invalid:
+        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+        flow.user_agent = APPLICATION_NAME
+        if flags:
+            credentials = tools.run_flow(flow, store, flags)
+        else: # Needed only for compatibility with Python 2.6
+            credentials = tools.run(flow, store)
+        print('Storing credentials to ' + credential_path)
+    return credentials
+
+
