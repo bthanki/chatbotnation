@@ -9,6 +9,7 @@ from service.service import verify_nick_name
 from service.service import verify_email_id
 from service.service import get_schedule_details
 from service.service import save_friend
+from service.service import insert_event
 from service.service import insert_into_schtable
 from service.service import user_greetings
 
@@ -91,7 +92,7 @@ def chatbot_facade():
             "source": "Test"
         }
     else:
-        res={}
+        res = {}
 
     res = json.dumps(res, indent=4)
     #print(res)
@@ -100,6 +101,7 @@ def chatbot_facade():
     #print(r)
     logger.info("Exit:Chatbot Facade")
     return r
+
 
 
 if __name__ == '__main__':

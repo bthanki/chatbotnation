@@ -3,10 +3,25 @@ import datetime
 from db.mysql import *
 from datetime import datetime, timedelta, time
 from models.models import *
+import os
+from apiclient import discovery
+import httplib2
+import oauth2client
+from oauth2client import client
+from oauth2client import tools
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+SCOPES = 'https://www.googleapis.com/auth/calendar'
+CLIENT_SECRET_FILE = 'client_secret.json'
+APPLICATION_NAME = 'Google Calendar API Python Quickstart'
+
+try:
+    import argparse
+    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+except ImportError:
+    flags = None
 
 def make_json(speech,text,data,event):
     res={
@@ -157,6 +172,7 @@ def get_schedule_details(email,name,date,period,duration):
             return make_json_with_buttons(None,None,None,"preferred_day_not_available")
 
 
+
 def insert_into_schtable(date,facebook_id,duration_amount,application,start_time,email,name):
     new_date = datetime.strptime(date , '%Y-%m-%d')
     new_facebook_id = int(facebook_id.replace(" ",""))
@@ -181,8 +197,74 @@ def insert_into_schtable(date,facebook_id,duration_amount,application,start_time
         get_session().add(user_sch)
         get_session().commit()
         logger.info("Exit:Insert params")
-    else :
+    else:
         return "No entry found in User Table"
+
+
+
+def insert_event(event_name,description,start_date,end_date,time_zone,email_from,email_to):
+    logger.info("Entry:insert event in google calendar")
+    credentials = get_credentials(email_from)
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar', 'v3', http=http)
+    event=event_json_creation(event_name,description,start_date,end_date,time_zone,email_from,email_to)
+    event = service.events().insert(calendarId=email_from, body=event).execute()
+    print('Event created: %s' % (event.get('htmlLink')))
+
+def event_json_creation(event_name,description,start_date,end_date,time_zone,email_from,email_to):
+    logger.info("Entry:event json creation for google calendar")
+    event = {
+        'summary': event_name,
+        'location': 'Office',
+        'description': description,
+        'start': {
+            'dateTime': start_date,
+            'timeZone': time_zone,
+        },
+        'end': {
+            'dateTime': end_date,
+            'timeZone': time_zone,
+        },
+        'attendees': [
+            {'email': email_to}
+        ],
+        'reminders': {
+            'useDefault': True,
+        },
+    }
+    return event
+
+def get_credentials(email):
+    logger.info("Entry:get credentials for google calendar")
+    home_dir = os.path.dirname(__file__)
+    credential_dir = os.path.join(home_dir, 'credentials')
+    if not os.path.exists(credential_dir):
+        os.makedirs(credential_dir)
+    if(email=='chatbotnation1@gmail.com'):
+        json='chatbotnation1.json'
+    elif (email=='chatbotnation2@gmail.com'):
+        json = 'chatbotnation2.json'
+    elif (email=='chatbotnation3@gmail.com'):
+        json = 'chatbotnation3.json'
+    elif (email=='chatbotnation4@gmail.com'):
+        json = 'chatbotnation4.json'
+    credential_path = os.path.join(credential_dir, json)
+
+    store = oauth2client.file.Storage(credential_path)
+    credentials = store.get()
+    if not credentials or credentials.invalid:
+        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+        flow.user_agent = APPLICATION_NAME
+        if flags:
+            credentials = tools.run_flow(flow, store, flags)
+        else: # Needed only for compatibility with Python 2.6
+            credentials = tools.run(flow, store)
+        print('Storing credentials to ' + credential_path)
+    return credentials
+
+
+
+
 
 
 def user_greetings(new_facebook_id):
@@ -200,3 +282,4 @@ def user_greetings(new_facebook_id):
         return 'Hi'+ value
     else:
         return "No User"
+

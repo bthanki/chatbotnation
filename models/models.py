@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, Time, text, BIGINT
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, Time, text, BIGINT, LargeBinary
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -45,12 +45,12 @@ class UserClnMap(Base):
     usr_cln_id = Column(Integer, primary_key=True)
     usr_id = Column(ForeignKey('user.usr_id'), index=True)
     client_name = Column(String(255))
-    cln_Email_ID = Column(String(320))
+    cln_email_id = Column(String(320))
     cln_str = Column(Integer)
     active_flag = Column(String(1))
     created_date = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
     updated_date = Column(DateTime)
-
+    calendar_json = Column(LargeBinary)
     usr = relationship('User')
 
 
