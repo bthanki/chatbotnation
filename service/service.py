@@ -92,7 +92,7 @@ def save_friend(facebook_id,email,name):
         name=friend.first_name
     if user.usr_id is not None and friend.usr_id is not None:
         user_frnd_list = UserFrndList(usr_id=user.usr_id,frnd_usr_id=friend.usr_id,
-                                      created_date=str(datetime.datetime.now()),
+                                      created_date=str(datetime.now()),
                                       active_flag="A",nick_name=name)
         get_session().add(user_frnd_list)
         get_session().commit()
