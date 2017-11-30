@@ -71,10 +71,11 @@ def verify_email_id(email):
         return make_json(speech,speech,speech,None)
 
 
-def verify_nick_name(name):
+def verify_nick_name(name,facebook_id):
     logger.info("Entry:Verify Nick Name:")
+    user = get_session().query(User).filter_by(facebook_id=facebook_id).first()
     user_frnd_list = Table('user_frnd_list', get_metadata(), autoload=True)
-    s = user_frnd_list.select(user_frnd_list.c.nick_name == name)
+    s = user_frnd_list.select((user_frnd_list.c.nick_name == name) & (user_frnd_list.c.usr_id == user.usr_id))
     rs = s.execute()
     row = rs.fetchall()
     if len(row):

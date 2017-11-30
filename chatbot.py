@@ -31,11 +31,9 @@ def chatbot_facade():
 
     if req.get("result").get("action") == "check_nick_name":
         parameters= req.get("result").get("parameters")
-        #facebook_id=req.get("originalRequest").get("data").get("sender").get("id")
-        #print(facebook_id)
+        facebook_id=req.get("originalRequest").get("data").get("sender").get("id")
         name=parameters.get("given-name")
-        print(name)
-        res=verify_nick_name(name)
+        res=verify_nick_name(name,facebook_id)
     elif req.get("result").get("action") == "check_email":
         parameters = req.get("result").get("parameters")
         email = parameters.get("email")
