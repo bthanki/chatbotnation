@@ -263,20 +263,23 @@ def event_json_creation(event_name,description,start_date,end_date,time_zone,ema
     }
     return event
 
+def get_calendar_file(email):
+    logger.info("Entry:Get Calendar Authentication File")
+    user_cln_map = Table('user_cln_map', get_metadata(), autoload=True)
+    s = user_cln_map.select(user_cln_map.c.cln_email_id == email)
+    rs = s.execute()
+    row = rs.fetchall()
+    return row['calendar_json']
+
+
 def get_credentials(email):
     logger.info("Entry:get credentials for google calendar")
     home_dir = os.path.dirname(__file__)
     credential_dir = os.path.join(home_dir, 'credentials')
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
-    if(email=='chatbotnation1@gmail.com'):
-        json='chatbotnation1.json'
-    elif (email=='chatbotnation2@gmail.com'):
-        json = 'chatbotnation2.json'
-    elif (email=='chatbotnation3@gmail.com'):
-        json = 'chatbotnation3.json'
-    elif (email=='chatbotnation4@gmail.com'):
-        json = 'chatbotnation4.json'
+    if email is not None:
+        json=get_calendar_file(email)
     credential_path = os.path.join(credential_dir, json)
 
     store = oauth2client.file.Storage(credential_path)

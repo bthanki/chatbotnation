@@ -50,7 +50,7 @@ class UserClnMap(Base):
     active_flag = Column(String(1))
     created_date = Column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
     updated_date = Column(DateTime)
-    calendar_json = Column(LargeBinary)
+    calendar_json = Column(String(50))
     usr = relationship('User')
 
 
