@@ -316,3 +316,82 @@ def user_greetings(new_facebook_id):
     else:
         return "No User"
 
+
+def insert_into_team(facebook_id,team_name):
+    logger.info("Entry:Insert Team table:")
+    new_facebook_id = int(facebook_id.replace(" ", ""))
+    user = get_session().query(User).filter_by(facebook_id=new_facebook_id).first()
+    leader_id = user.usr_id
+    if user.usr_id is not None :
+         user_team = UserTeam(leader_id = leader_id,team_name = team_name,active_flag = 1)
+         get_session().add(user_team)
+         get_session().commit()
+         logger.info("Exit:Insert Team table")
+    else:
+        return "Not Inserted into the table"
+
+
+def insert_into_teammap(facebook_id,email):
+    logger.info("Entry:Insert Team_map table:")
+    new_facebook_id = int(facebook_id.replace(" ", ""))
+    user = get_session().query(User).filter_by(facebook_id=new_facebook_id).first()
+    user_id = user.usr_id
+    if user.usr_id is not None :
+         user_team_map = UserTeamMap(usr_id = user_id,usr_email_id = email,active_flag = 1, created_date = str(datetime.now()) )
+         get_session().add(user_team_map)
+         get_session().commit()
+         logger.info("Exit:Insert Team map table")
+    else:
+        return "Not Inserted into the table Team map"
+
+
+def insert_into_schtable(date,facebook_id,duration_amount,application,start_time,email,name):
+    new_date = datetime.strptime(date , '%Y-%m-%d')
+    print(new_date)
+    logger.info("Entry:Insert params:")
+    user_frnd_list = get_session().query(UserFrndList)
+    event_name = "ChatbotNation"
+    description = "Google api call"
+    time_zone = 'America/New_York'
+    start_date = str(date)+'T'+start_time
+
+    end_date = str(date)+'T'+start_time
+    print(end_date)
+    new_facebook_id = int(facebook_id.replace(" ", ""))
+    user = get_session().query(User).filter_by(facebook_id=new_facebook_id).first()
+    frnd = Table('user', get_metadata(), autoload=True)
+    email_from = user.email_id
+
+    if user.usr_id is not None :
+        user_cln_map = get_session().query(UserClnMap).filter_by(usr_id=user.usr_id).first()
+        if email is not '':
+            s1 = frnd.select(frnd.c.email_id == email)
+            rs1 = s1.execute()
+            row = rs1.fetchone()
+            id = row['usr_id']
+        elif name is not '':
+            user_frnd_list = Table('user_frnd_list',get_metadata(),autoload=True)
+            s1 = user_frnd_list.select(user_frnd_list.c.nick_name == name)
+            rs1 = s1.execute()
+            row = rs1.fetchone()
+            id = row['frnd_usr_id']
+        user_sch=UserSch(usr_id = user.usr_id, sch_date = new_date , sch_start_time = start_time, sch_duration = duration_amount,
+                         application = application, active_flag = 1 , usr_cln_id = user_cln_map.usr_cln_id , usr_prin_part_id = id, created_date = str(datetime.now()) )
+        get_session().add(user_sch)
+        get_session().commit()
+
+        if email is not '':
+            email_to = email
+        else:
+            s1 = user_frnd_list.select(user_frnd_list.c.nick_name == name)
+            rs1 = s1.execute()
+            row = rs1.fetchone()
+            id = row['frnd_usr_id']
+            user2=get_session().query(User).filter_by(usr_id=id).first()
+            email_to = user2.email_id
+        insert_event(event_name, description, start_date, end_date, time_zone, email_from, email_to)
+
+
+        logger.info("Exit:Insert params")
+    else:
+        return "No entry found in User Table"

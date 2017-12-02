@@ -12,6 +12,9 @@ from service.service import save_friend
 from service.service import insert_event
 from service.service import insert_into_schtable
 from service.service import user_greetings
+from service.service import insert_into_schtable
+from service.service import insert_into_teammap
+from service.service import insert_into_team
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -89,6 +92,54 @@ def chatbot_facade():
             # "contextOut": [],
             "source": "Test"
         }
+    elif req.get("result").get("action") == "get_all_params":
+        facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
+        parameters = req.get("result").get("parameters")
+        name = parameters.get("given-name")
+        email = parameters.get("email")
+        date = parameters.get("date")
+        duration = parameters.get("duration")
+        duration_amount = duration.get("amount")
+        application = parameters.get("application")
+        start_time = parameters.get("time1")
+        print(start_time)
+        speech = insert_into_schtable(date, facebook_id, duration_amount, application, start_time, email, name)
+        res = {
+            "speech": speech,
+            "displayText": speech,
+            "data": {"facebook": {
+                "text": speech
+            }},
+            # "contextOut": [],
+            "source": "Test"
+        }
+    elif req.get("result").get("action") == "team_details":
+        parameters = req.get("result").get("parameters")
+    team_name = parameters.get("team-name")
+    email = parameters.get("email2")
+    length = len(email)
+
+    #        print(email)
+    facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
+    if team_name != ' ':
+
+        email1 = ""
+        for i in range(0, length):
+            email1 = email[i]
+            speech = insert_into_teammap(facebook_id, email1)
+            i += i
+            print(email1)
+        speech = insert_into_team(facebook_id, team_name)
+        res = {
+            "speech": speech,
+            "displayText": speech,
+            "data": {"facebook": {
+                "text": speech
+            }},
+            # "contextOut": [],
+            "source": "Test"
+        }
+
     else:
         res = {}
 
