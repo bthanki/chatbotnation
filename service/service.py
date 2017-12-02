@@ -178,11 +178,9 @@ def get_schedule_details(email,name,date,period,duration):
 
 def insert_into_schtable(date,facebook_id,duration_amount,application,start_time,email,name):
 
-
-
+    logger.info("Entry:Insert params:")
     new_date = datetime.strptime(date , '%Y-%m-%d')
     print(new_date)
-    logger.info("Entry:Insert params:")
     user_frnd_list = get_session().query(UserFrndList)
     event_name = "ChatbotNation"
     description = "Google api call"
@@ -224,8 +222,8 @@ def insert_into_schtable(date,facebook_id,duration_amount,application,start_time
             email_to = user2.email_id
         insert_event(event_name, description, start_date, end_date, time_zone, email_from, email_to)
 
-
-        logger.info("Exit:Insert params")
+        speech="Awesome! We are almost done 💃 If you want to add more users to the meeting, please specify the mail_ID's of the users."
+        return make_json(speech, speech, speech, None)
     else:
         return "No entry found in User Table"
 

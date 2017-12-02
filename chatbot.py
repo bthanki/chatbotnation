@@ -103,16 +103,7 @@ def chatbot_facade():
         application = parameters.get("application")
         start_time = parameters.get("time1")
         print(start_time)
-        speech = insert_into_schtable(date, facebook_id, duration_amount, application, start_time, email, name)
-        res = {
-            "speech": speech,
-            "displayText": speech,
-            "data": {"facebook": {
-                "text": speech
-            }},
-            # "contextOut": [],
-            "source": "Test"
-        }
+        res = insert_into_schtable(date, facebook_id, duration_amount, application, start_time, email, name)
     elif req.get("result").get("action") == "team_details":
 
 
