@@ -266,11 +266,9 @@ def event_json_creation(event_name,description,start_date,end_date,time_zone,ema
 
 def get_calendar_file(email):
     logger.info("Entry:Get Calendar Authentication File")
-    user_cln_map = Table('user_cln_map', get_metadata(), autoload=True)
-    s = user_cln_map.select(user_cln_map.c.cln_email_id == email)
-    rs = s.execute()
-    row = rs.fetchall()
-    return row['calendar_json']
+    user_cln_map = get_session().query(UserClnMap).filter_by(cln_email_id=email).first()
+    return user_cln_map.calendar_json;
+
 
 
 def get_credentials(email):
