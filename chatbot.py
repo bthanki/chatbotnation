@@ -114,13 +114,14 @@ def chatbot_facade():
             "source": "Test"
         }
     elif req.get("result").get("action") == "team_details":
+
+
+    #        print(email)
+        facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
         parameters = req.get("result").get("parameters")
         team_name = parameters.get("team-name")
         email = parameters.get("email2")
         length = len(email)
-
-    #        print(email)
-        facebook_id = req.get("originalRequest").get("data").get("sender").get("id")
         if team_name != ' ':
             email1 = ""
             for i in range(0, length):
