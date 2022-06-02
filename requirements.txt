@@ -6,7 +6,7 @@ click==6.7
 Flask==0.12.2
 Flask-SQLAlchemy==2.3.2
 google-api-python-client==1.6.4
-html5lib==0.9999999
+html5lib==0.99999999
 httplib2==0.10.3
 idna==2.6
 inflect==0.2.5
